@@ -1,7 +1,8 @@
 import tkinter as tk
+from tests import tests
 
 root = tk.Tk()
-root.geometry("1280x120")
+root.geometry("1280x200+50+50")
 root.title('')
 root.attributes("-transparentcolor", "green")
 root.config(bg="green")
@@ -15,60 +16,37 @@ root.bind("<Configure>", print_size)'''
 def move_window(e):
     global root
     root.geometry(f"+{e.x_root}+{e.y_root}")
-win_move = tk.Label(root, text="                                                    ", bg="white")
-win_move.pack()
-win_move.bind("<B1-Motion>", move_window)
+
+minimized = False
+def minimize_window(e):
+    global minimized
+    if minimized:
+        root.geometry("1280x200")
+    else:
+        root.geometry("36x20")
+    minimized = not minimized
+
+title_bar = tk.Frame(root)
+
+minimize_btn = tk.Button(title_bar, text="M", bd=-2, padx=10, bg="white", fg="#969696")
+minimize_btn.grid(row=0, column=0)
+minimize_btn.bind("<Button-1>", minimize_window)
+
+win_name = tk.Label(title_bar, text="                                                    ", bg="white")
+win_name.grid(row=0, column=1)
+win_name.bind("<B1-Motion>", move_window)
+
+title_bar.pack()
+
+
 
 BUTTON_NAME = 0
 BUTTON_CARDS = 1
-button_card_list = [
-    ("A", [
-        "Anybody: Did come while I was out?",
-        "Anywhere: Did you go exciting last night?",
-        "Anything: Are you doing tonight?",
-        "A: We didn't go on Sunday."
-    ]),
-    ("D", [
-        "Do: Enough water",
-        "Do: I don't enough exercise."
-    ]),
-    ("E", [
-        "Enough time: I don't have .",
-        "Enough water: You don't drink ."
-    ]),
-    ("G", [
-        "Give up: You should smoking, it's a terrible habit."
-    ]),
-    ("H", [
-        "He eats crisps and chips.: Too many",
-        "Here are your shoes. Put .: Them on"
-    ]),
-    ("I", [
-        "I can't find my keys. Can you help me ?: Look for them",
-        "I can't go. I'm busy.: Too",
-        "I don't enough exercise.: Do",
-        "I drink tea.: Too much",
-        "I have to after my little brother today.: Put",
-        "I knocked at the door but answered.: Nobody",
-        "I was tired to go out last night.: Too",
-        "I work .: Too much"
-    ]),
-    ("L", [
-        "Look: You should up new words in a dictionary.",
-        "Look for them: I can't find my keys. Can you help me ?"
-    ]),
-    ("M", [
-        "Much: How meat do you eat?"
-    ]),
-    ("N", [
-        "Nobody: I knocked at the door but answered."
-    ]),
-]
+test_set = tests
 
-
-current_cards = button_card_list[0][BUTTON_CARDS]
+current_cards = test_set[0][BUTTON_CARDS]
 card_el_index = 0
-buttons = []
+char_buttons = []
 
 # horizontalCharsFrame
 horizontalCharsFrame = tk.Frame(root)
@@ -86,7 +64,7 @@ def search_in_cards(e):
     s =  inputtxt.get("1.0", "end-1c")
     print(f"Search value : '{s}'")
     result = []
-    for chars in button_card_list:
+    for chars in test_set:
         for card in chars[BUTTON_CARDS]:
             if s.lower() in card.lower():
                 result.append(card)
@@ -96,16 +74,16 @@ def clear_input(e):
     inputtxt.delete("1.0", "end-1c")
 
 def exit_event(e):
-    exit()
+    root.destroy()
 
-for i in range(len(button_card_list)):
-    buttons.append(tk.Button(horizontalCharsFrame, text=button_card_list[i][BUTTON_NAME], bd=-2, bg="white", fg="#969696"))
+for i in range(len(test_set)):
+    char_buttons.append(tk.Button(horizontalCharsFrame, text=test_set[i][BUTTON_NAME], bd=-2, bg="white", fg="#969696"))
 
-for i in range(len(buttons)):
-    buttons[i].grid(row = 0, column = i)
-    buttons[i].bind('<Button-1>', lambda e, card=button_card_list[i][BUTTON_CARDS]: change_char(e, card))
+for i in range(len(char_buttons)):
+    char_buttons[i].grid(row = 0, column = i)
+    char_buttons[i].bind('<Button-1>', lambda e, card=test_set[i][BUTTON_CARDS]: change_char(e, card))
 else:
-    charsLastBtnInd = len(buttons)
+    charsLastBtnInd = len(char_buttons)
     found_lbl = tk.Label(horizontalCharsFrame, text=f"  F : {len(current_cards)}  ", bg="white", fg="#969696")
     found_lbl.grid(row=0, column=charsLastBtnInd)
 
@@ -117,15 +95,15 @@ else:
     clear_input_btn.grid(row=0, column=charsLastBtnInd + 2)
     clear_input_btn.bind("<Button-1>", clear_input)
 
-    exit_btn = tk.Button(horizontalCharsFrame, text="E", bd=-2, bg="white", fg="#969696")
-    exit_btn.grid(row=0, column=charsLastBtnInd + 3)
+    exit_btn = tk.Button(horizontalCharsFrame, text="E", bd=-2, padx=10, bg="white", fg="#969696")
+    exit_btn.grid(row=0, column=charsLastBtnInd + 4)
     exit_btn.bind("<Double-Button-1>", exit_event)
     
 horizontalCharsFrame.pack()
 # horizontalCharsFrame
 
 # cards start
-card_lbl = tk.Label(root, text=current_cards[0], bg="white", fg="#969696")
+card_lbl = tk.Label(root, text=current_cards[0], height=7, bg="white", fg="#969696")
 card_lbl.pack()
 # cards end
 
